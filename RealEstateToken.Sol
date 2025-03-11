@@ -1,0 +1,28 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract RealEstateToken is ERC721Enumerable, Ownable {
+    uint public propertyIdCounter;
+    mapping(uint => string) public propertyDetails;
+
+    constructor() ERC721("RealEstateNFT", "RET") {}
+
+    function mintProperty(string memory _details) public onlyOwner {
+        propertyIdCounter++;
+        uint newPropertyId = propertyIdCounter;
+        _mint(msg.sender, newPropertyId);
+        propertyDetails[newPropertyId] = _details;
+    }
+
+    function transferProperty(address _to, uint _propertyId) public {
+        require(ownerOf(_propertyId) == msg.sender, "Not the owner");
+        _transfer(msg.sender, _to, _propertyId);
+    }
+
+    function getPropertyDetails(uint _propertyId) public view returns (string memory) {
+        return propertyDetails[_propertyId];
+    }
+}
